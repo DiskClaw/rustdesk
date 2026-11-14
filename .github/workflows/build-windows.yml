@@ -1,0 +1,28 @@
+name: Build Windows Only
+
+# Manually triggered remote build: Windows x64 / ARM64 (Flutter) and x86 (Sciter) only.
+# All Linux / macOS / Android / iOS jobs in flutter-build.yml are skipped.
+on:
+  workflow_dispatch:
+    inputs:
+      upload-tag:
+        description: "Release tag to publish EXE/MSI to (same tag is reused each run)"
+        type: string
+        default: "windows-build"
+      publish-release:
+        description: "Build MSI and publish EXE/MSI to GitHub Releases"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    uses: ./.github/workflows/flutter-build.yml
+    secrets: inherit
+    with:
+      windows-only: true
+      upload-artifact: ${{ inputs.publish-release }}
+      upload-tag: ${{ inputs.upload-tag }}
+      publish-update-metadata: false
